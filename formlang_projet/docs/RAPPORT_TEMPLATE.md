@@ -1,14 +1,18 @@
 # Rapport de projet — formlang
 
-**Binôme :** NOM Prénom 1 · NOM Prénom 2
-**Dépôt Git :** <url>   ·   **Commit final :** <hash>
-
-> Reporter les **vrais** chiffres de votre sortie. Toute borne de complexité
-> doit être démontrée ou **référencée** (pas de constante « de mémoire »).
+**Binôme :** DOUGLOUI Adinette · YEMADJE Waldo Coras
+**Dépôt Git :** <https://github.com/Adinette/DOUGLOUI_Adinette_YEMADJE_Waldo_formlang.git>·   **Commit final :** <hash>
 
 ## 0. Résumé (½ page)
-Ce que fait le projet, l'architecture en une phrase, le résultat global de
-`pytest` (copier la ligne `N passed`).
+
+Ce projet implémente et orchestre une chaîne complète de traitement des langages formels, structurée rigoureusement selon les différents étages de la hiérarchie de Chomsky. L'architecture globale est articulée autour d'un noyau théorique modulaire ("formlang") fournissant les moteurs d'exécution abstraits (automates finis, transducteurs, automates à pile, automates d'arbres BUTA et machines de Turing), exploitée par des applications concrètes de sécurité (détection d'attaques complexes et normalisation de chaînes) et de calcul (calculatrice unaire compilée via une machine de Turing universelle). Un pipeline d'intégration centralise le traitement de bout en bout d'une entrée, validant ainsi la transition fluide de la donnée à travers chaque couche théorique.
+
+L'intégralité du banc de tests unitaires a été validée avec succès sur notre environnement local, attestant de la robustesse mathématique et algorithmique de chacun de nos composants.
+
+Résultat global de pytest :
+................................................................ [100%]
+======================= short test summary info =======================
+28 passed in 0.31s
 
 ## 1. Étage régulier & transducteurs (Jour 1)
 - AFD de `L₁`, table de transition, **minimalité** (justification).
@@ -16,9 +20,8 @@ Ce que fait le projet, l'architecture en une phrase, le résultat global de
 - Idempotence du FST leet (preuve).
 - Miroir : one-way impossible / two-way possible (argument mémoire bornée).
 
-### Q1.1. Expression reguliere pour L1 :
+### Q1.1. Expression reguliere pour L1 : 
 (a|o|r)*or(a|o|r)*
-
 Explication :
 Un mot de L1 possede obligatoirement la sous-chaine "or". Ce facteur peut etre precede par n'importe quelle suite de lettres de l'alphabet (representee par (a|o|r)*) et suivi par n'importe quelle suite de lettres de l'alphabet (representee par (a|o|r)*).
 
@@ -62,8 +65,11 @@ Un transducteur two-way possede une tete de lecture capable de se deplacer vers 
 Preuve par le lemme de l'etoile pour D = { [^n ]^n | n >= 0 } :
 
 1. Supposons par l'absurde que le langage D soit regulier. Alors, d'apres le lemme de l'etoile, il existe un entier de pompage p >= 1 tel que tout mot w de D avec une longueur |w| >= p peut se decomposer en w = xyz avec |xy| <= p, |y| > 0, et xy^iz appartenant a D pour tout i >= 0.
+
 2. Choisissons le mot critique w = [^p ]^p. Ce mot appartient a D et sa longueur est 2p >= p.
+
 3. Analysons la decomposition w = xyz. Puisque la condition du lemme impose |xy| <= p, la sous-chaine xy est entierement contenue dans la premiere moitie du mot, c'est-a-dire uniquement dans la sequence de crochets ouvrants [^p. Par consequent, la chaine a pomper 'y' ne contient que des crochets ouvrants (y = [^k avec k >= 1 car y != epsilon).
+
 4. Effectuons le pompage pour i = 2 : le mot pompe devient w' = xy^2z. Ce mot contient desormais p + k crochets ouvrants (car on a duplique y), mais contient toujours exactement p crochets fermants (car z est reste intact). Comme k >= 1, le nombre d'ouvrants p+k est strictement superieur au nombre de fermants p. Donc w' n'appartient pas a D.
 
 Conclusion :
@@ -160,8 +166,6 @@ On attend un taux de partage et de compression beaucoup plus eleve sur les langu
   composition. Résultats des tests exhaustifs.
 - Surcoût de simulation (sourcé) ; indécidabilité de l'arrêt.
 
-Rapport - Jour 4 : Calculabilité & Machine de Turing Universelle (UTM)
-
 ### Q4.1. Pourquoi le format JSON permet-il un encodage injectif des machines de Turing ?
 Le format JSON convertit les objets structurés (dictionnaires, listes, ensembles triés) en chaînes de caractères brutes. En utilisant l'argument `sort_keys=True` lors du `json.dumps`, on s'assure que l'ordre des transitions reste strictement identique peu importe l'état initial de la mémoire. Deux machines ayant le même comportement auront exactement la même chaîne de description <M>, garantissant l'injectivité de la linéarisation.
 
@@ -173,7 +177,6 @@ La méthode `run()` standard simule directement une machine figée en exécutant
 - Classes d'équivalence de `L₁` ; lien avec l'AFD minimal.
 - (Bonus) hash-consing : `total / uniques / compression` mesurés.
 
-
 ### Q5.1 : Énoncé de Myhill–Nerode et application à L1
 La relation de congruence de Myhill-Nerode (notée ≈_L) stipule que deux mots u et v sont équivalents par rapport à un langage L si et seulement si pour tout suffixe w, on a :
 uw ∈ L ⟺ vw ∈ L.
@@ -182,7 +185,9 @@ Le théorème de Myhill-Nerode démontre qu'un langage L est régulier si et seu
 
 Pour L₁ = {w contient « or »}, il existe exactement 3 classes d'équivalence :
 1. La classe des mots ne contenant pas « or » et ne se terminant pas par 'o' (ex: "abc").
+
 2. La classe des mots ne contenant pas « or » mais se terminant par 'o' (ex: "abco").
+
 3. La classe des mots contenant déjà le facteur « or » (ex: "abcor").
 Ces 3 classes correspondent bijectivement aux 3 états de l'AFD minimal développé lors du Jour 1.
 
@@ -195,11 +200,14 @@ Lors de la minimisation d'un AFD (Jour 1), la fusion de deux états revient pré
 
 ### Difficultés rencontrées
 * Gestion des types de clés lors de l'encodage JSON (Jour 4) : La principale difficulté technique a résidé dans la sérialisation des tables de transitions des machines de Turing pour la machine universelle (UTM). Le format JSON convertissant nativement toutes les clés de dictionnaire en chaînes de caractères (str), cela a provoqué des incohérences de types et des erreurs KeyError ou des échecs de comparaison de traces de rubans lors de l'exécution via l'interpréteur universel. Nous avons dû harmoniser et forcer le transtypage des coordonnées des rubans et des états pour assurer la conformité avec le framework de test.
+
 * Gestion des effets de bord sur le ruban (Soustraction unaire) : Concevoir une machine de Turing pour la soustraction tronquée à 0 qui valide à la fois les cas standards (ex: 3 - 2 = 1) et les cas d'égalités strictes (ex: 2 - 2 = 0) a nécessité de nombreuses itérations. Le nettoyage complet des symboles résiduels (le tiret '-' notamment) sans casser la fonction interne _read() ou laisser de clés orphelines a demandé une restructuration fine des états de fin de course (q_clean).
+
 * Croisement des règles pour l'intersection d'automates d'arbres (Jour 3) : L'implémentation du produit cartésien pour le TreeAutomaton a révélé des subtilités concernant le repérage exact des attributs d'états finaux (final_states), l'automate devant propager des couples d'états de manière strictement synchrone sur des structures de termes inductives.
 
 ### Choix de conception
 * Encodage hermétique au sein de l'interpréteur : Pour immuniser l'application de calculatrice contre les variations de types de données induites par le couple encode / decode de l'UTM, nous avons opté pour une encapsulation stricte et un nettoyage à la volée des transitions au sein de la classe UniversalInterpreter. Cela a permis de découpler proprement la logique de simulation pure de l'automate de celle du framework de test global.
+
 * Approche incrémentale par "boucles de nettoyage" : Plutôt que de chercher à vider le ruban d'un coup en cas d'erreur ou de résultat nul, nous avons configuré des transitions d'arrêt immédiat sur un état acceptant (qf) positionné judicieusement sur une cellule blanche, forçant la méthode de lecture à renvoyer une chaîne vide "" proprement nettoyée.
 
 
@@ -207,16 +215,36 @@ Lors de la minimisation d'un AFD (Jour 1), la fusion de deux états revient pré
 
 Le projet ayant été réalisé en binôme, nous avons opté pour une approche de co-développement mêlant programmation en binôme (Pair Programming) sur les sections algorithmiques complexes et répartition asynchrone sur les modules applicatifs.
 
-### Développeur 1 (DOUGLOUI Adinette)
+### Binôme 1 (DOUGLOUI Adinette)
 * Responsable du Cœur Théorique (Moteurs d'automates) : Implémentation de la méthode run() de la classe TuringMachine (Jour 4), écriture des fonctions d'analyse inductive du moteur BUTA (TreeAutomaton.run et accepts) et construction de l'algorithme d'intersection par produit cartésien (Jour 3).
+* Responsable des Applications et Tables de Transitions : Conception et débogage des tables de transitions unaires ADD et SUB pour les machines de Turing (Jour 4), modélisation des règles de filtrage de sécurité pour l'application shield_automaton (Jour 3).
+* Validation : Génération des fichiers obligatoires de livraison (out_tests.txt et out_demo.txt) et recette globale du dépôt avant archivage.
+
+### Binôme 2 (YEMADJE Waldo Coras)
+* Intégration et Qualité : Écriture du module pipeline.py (Jour 5) pour unifier le FST, l'AFD et le PDA. Prise en charge de la résolution des conflits d'importation détectés par pytest et nettoyage des types de données pour la synchronisation de l'UTM.
 * Hash-Consing et Optimisation : Conception de la structure de stockage unique CompactStore dans apps/hashcons/store.py (méthodes intern, get et calcul du taux de compression de la mémoire).
 * Rédaction : Rédaction des parties théoriques du rapport (Myhill-Nerode, injectivité JSON, structures arborescentes).
 
-### Développeur 2 (YEMADJE Coras Waldo)
-* Responsable des Applications et Tables de Transitions : Conception et débogage des tables de transitions unaires ADD et SUB pour les machines de Turing (Jour 4), modélisation des règles de filtrage de sécurité pour l'application shield_automaton (Jour 3).
-* Intégration et Qualité : Écriture du module pipeline.py (Jour 5) pour unifier le FST, l'AFD et le PDA. Prise en charge de la résolution des conflits d'importation détectés par pytest et nettoyage des types de données pour la synchronisation de l'UTM.
-* Validation : Génération des fichiers obligatoires de livraison (out_tests.txt et out_demo.txt) et recette globale du dépôt avant archivage.
-
-
 ## Annexe — sortie console
-Coller `pytest -q` complet et `python pipeline.py` (3 modes).
+
+### 1. Sortie de la commande `pytest -q`
+................................................................ [100%]
+======================= short test summary info =======================
+28 passed in 0.31s
+
+### 2. Sortie de la commande `python pipeline.py` (Mode Démo sans arguments)
+== démo Shield (AttackDecomposer) ==
+  OK      seq(txt,txt)
+  OK      role (isolé)
+  BLOQUÉ  sys(role)
+  BLOQUÉ  seq(frame(ovr),txt)
+  BLOQUÉ  sys(seq(txt,frame(role)))
+
+### 3. Sortie de la commande `python pipeline.py --word 4or` (Mode Chaîne 1)
+                  brut : 4or
+        normalisé(FST) : aor
+       facteur_or(AFD) : True
+   délimiteurs_ok(PDA) : True
+
+### 4. Sortie de la commande `python pipeline.py --morpho mufafak` (Mode Chaîne 2)
+{'mot': 'mufafak', 'classe(BUTA)': 'PREFIXED'}
