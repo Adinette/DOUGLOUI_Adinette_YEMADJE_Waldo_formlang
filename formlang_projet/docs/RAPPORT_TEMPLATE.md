@@ -2,7 +2,7 @@
 
 **Binôme :** DOUGLOUI Adinette · YEMADJE Waldo Coras
 **Dépôt Git :** https://github.com/Adinette/DOUGLOUI_Adinette_YEMADJE_Waldo_formlang.git
-**Commit final :** 7e4be10e5d91de63bbf8d3b47e8a76475ee83a85
+**Commit final :** 234fe29db845fe22aff865968c073bfdf5fa350c
 
 ## 0. Résumé
 
