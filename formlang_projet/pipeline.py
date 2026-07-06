@@ -1,0 +1,86 @@
+"""Pipeline intégrateur. À COMPLÉTER : assemblage.  -> Jour 5 (E5.1)."""
+from __future__ import annotations
+import argparse
+
+from apps.shield.normalizer import leet_normalize
+from apps.shield.detector import contains_or
+from apps.shield.delimiters import well_parenthesized
+from apps.morpho.automaton import morpho_automaton, classify
+from apps.morpho.discover import discover, segment_to_tree
+from apps.shield.decomposer import (
+    shield_automaton, is_blocked, txt, ovr, role, seq, frame, sys,
+)
+
+
+def analyze_word(raw: str) -> dict:
+    # 1. Normalisation par le transducteur (FST)
+    normalized = leet_normalize(raw)
+    
+    # 2. Détection du facteur 'or' (AFD)
+    has_or = contains_or(normalized)
+    
+    # 3. Validation des délimiteurs (PDA)
+    brackets_ok = well_parenthesized(normalized)
+    
+    return {
+        "brut": raw,
+        "normalisé(FST)": normalized,
+        "facteur_or(AFD)": has_or,
+        "délimiteurs_ok(PDA)": brackets_ok
+    }
+
+
+def analyze_morpho(word: str, vocab: set) -> dict:
+    # 1. Découverte des affixes (heuristique d'alternance)
+    prefixes = discover(vocab, prefix_side=True)
+    suffixes = discover(vocab, prefix_side=False)
+    
+    # 2. Segmentation et reconstruction en arbre structurel Term
+    tree = segment_to_tree(word, prefixes, suffixes)
+    
+    # 3. Classification par l'automate d'arbres BUTA
+    A = morpho_automaton()
+    cls = classify(A, tree)
+    
+    return {
+        "mot": word,
+        "classe(BUTA)": cls
+    }
+
+
+def demo_shield() -> list:
+    # FOURNI
+    A = shield_automaton()
+    cases = {
+        "seq(txt,txt)": seq(txt(), txt()),
+        "role (isolé)": role(),
+        "sys(role)": sys(role()),
+        "seq(frame(ovr),txt)": seq(frame(ovr()), txt()),
+        "sys(seq(txt,frame(role)))": sys(seq(txt(), frame(role()))),
+    }
+    return [(name, is_blocked(A, t)) for name, t in cases.items()]
+
+
+def main(argv=None):
+    p = argparse.ArgumentParser(description="Pipeline formlang")
+    p.add_argument("--word")
+    p.add_argument("--morpho")
+    args = p.parse_args(argv)
+    if args.word:
+        for k, v in analyze_word(args.word).items():
+            print(f"{k:>22} : {v}")
+    if args.morpho:
+        from apps.morpho.corpora import corpus_A
+        print(analyze_morpho(args.morpho, set(corpus_A())))
+    if not args.word and not args.morpho:
+        print("== démo Shield (AttackDecomposer) ==")
+        for name, blocked in demo_shield():
+            print(f"  {'BLOQUÉ ' if blocked else 'OK     '} {name}")
+
+
+if __name__ == "__main__":
+    main()
+
+
+# ==============================================================================
+# Classes
